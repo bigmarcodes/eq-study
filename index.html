@@ -66,7 +66,7 @@ const gNorm=g=>(cl(g,MING,MAXG)-MING)/(MAXG-MING),normG=n=>MING+cl(n,0,1)*(MAXG-
 const bwOct=q=>2*Math.asinh(1/(2*q))/Math.LN2;
 const qFromBw=o=>cl(1/(2*Math.sinh(Math.max(o,1e-4)*Math.LN2*.5)),MINQ,MAXQ);
 const dScale=g=>{g=cl(g,MING,MAXG);return g>=0?1+g/MAXG*DEPTH:1+g/MING*-DEPTH};
-const dAlpha=g=>.55+gNorm(g)*.3;
+const dAlpha=g=>.3+gNorm(g)*.7;
 const fmtF=f=>f>=1000?(f/1000).toFixed(2)+' kHz':f.toFixed(f<100?1:0)+' Hz';
 const fmtG=g=>(g>=0?'+':'')+g.toFixed(1)+' dB',axF=f=>f>=1000?(f/1000|0)+'k':''+f;
 const rgba=(h,a)=>{const n=parseInt(h.slice(1),16);return`rgba(${n>>16},${n>>8&255},${n&255},${a})`};
@@ -241,9 +241,15 @@ function drawB(){
  // dotted side curves = true band response pushed sideways with the depth mapping
  const ys=[];for(let y=BB.y+BB.h;y>=BB.y-.5;y-=2)ys.push(y);const fr=Float32Array.from(ys,y=>Math.min(yf(y),sr()*.499));
  const bell=b=>{const r=bellR(b),v=bands[b],hot=h.band===b&&h.zone==='BODY',c=hot?COL.hov:b===sel?COL.sel:COL.def;
-  const al=dAlpha(v.g),bg=ctx.createLinearGradient(r.x,0,r.x+r.w,0);bg.addColorStop(0,rgba(c,al*.75));bg.addColorStop(.5,rgba(c,Math.min(1,al*1.1)));bg.addColorStop(1,rgba(c,al*.75));ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(r.x,r.y,r.w,r.h,Math.min(5,r.h/2,r.w/2));ctx.fill();ctx.strokeStyle=lt(c,.3);ctx.lineWidth=1;ctx.stroke();
-  const db=respDb(b,fr);ctx.setLineDash([2,3]);ctx.strokeStyle=lt(c,.7);ctx.lineWidth=1.5;
-  for(const s of[-1,1]){path(db.map(d=>cxB+s*baseW/2*dScale(d)),ys);ctx.stroke()}ctx.setLineDash([]);
+  const al=dAlpha(v.g),bg=ctx.createLinearGradient(r.x,0,r.x+r.w,0);bg.addColorStop(0,rgba(c,al*.75));bg.addColorStop(.5,rgba(c,Math.min(1,al*1.1)));bg.addColorStop(1,rgba(c,al*.75));ctx.fillStyle=bg;ctx.beginPath();ctx.roundRect(r.x,r.y,r.w,r.h,Math.min(5,r.h/2,r.w/2));ctx.fill();ctx.strokeStyle=lt(c,.1+gNorm(v.g)*.5);ctx.lineWidth=.8+gNorm(v.g)*1.6;ctx.stroke();
+  // depth cues on the curves: segments nearer the viewer (boost) are brighter, thicker and more opaque; farther (cut) are dimmer, thinner and fainter
+  const db=respDb(b,fr);ctx.setLineDash([2,3]);
+  for(const s of[-1,1]){const px=db.map(d=>cxB+s*baseW/2*dScale(d));let cum=0;
+   for(let i=0;i<px.length-1;){const j=Math.min(i+4,px.length-1);let len=0;for(let k=i;k<j;k++)len+=Math.hypot(px[k+1]-px[k],ys[k+1]-ys[k]);
+    const gn=gNorm((db[i]+db[j])/2),cc=lt(c,Math.min(1,.3+gn*.8));
+    ctx.strokeStyle=cc.replace('rgb(','rgba(').replace(')',','+Math.min(1,.15+gn*1.0).toFixed(3)+')');ctx.lineWidth=.6+gn*1.8;ctx.lineDashOffset=cum;
+    ctx.beginPath();for(let k=i;k<=j;k++)k===i?ctx.moveTo(px[k],ys[k]):ctx.lineTo(px[k],ys[k]);ctx.stroke();cum+=len;i=j}}
+  ctx.lineDashOffset=0;ctx.setLineDash([]);
   if(b!==sel)T(String(b),cxB,r.cy,'center','12px system-ui,sans-serif','rgba(255,255,255,.9)')};
  for(const b of[1,2])if(b!==sel)bell(b);
  if(isBell(sel)){bell(sel);const r=bellR(sel),cy=r.cy,dt=(x,y,hot)=>CIR(x,y,QDOT,hot?COL.hov:COL.sel),lb=fmtF(bands[sel].f);
