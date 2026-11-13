@@ -285,11 +285,11 @@ const SCRIPT_URL='https://script.google.com/macros/s/AKfycbyq6_BzZbpc5djv5puTDJl
 const PRACTICE={clip:'audio/practice.mp3',fb:'pink'}; // optional file; falls back to pink noise
 // Task config: edit clips, caps (seconds), wording, targets here. v[0]=v1, v[1]=v2. fb:'white' = synthesize white noise if the clip is missing.
 const TASKS=[
-{clip:'audio/task1.mp3',fb:'white',cap:180,ins:"When you feel satisfied with your setting, press Lock In. Values don't need to be exact.",
+{clip:'audio/task1.mp3',fb:'white',cap:180,ins:"When you feel satisfied with your setting, press Lock In. </br> <b> Close is good enough, values don't need to be exact. <b> </br>",
  v:[{t:'Using the equalizer, use a bell filter to boost 1.5 kHz by 2.5 dB, with a Q of 0.65.',tgt:{f:1500,g:2.5,q:.65}},{t:'Using the equalizer, use a bell filter to boost 3.2 kHz by 3.5 dB, with a Q of 0.9.',tgt:{f:3200,g:3.5,q:.9}}]},
 {clip:'audio/task2.mp3',cap:300,ins:'When you are satisfied with the sound, press Lock In.',
  v:[{t:'Using the equalizer, make the vocal less muddy, however you see fit.'},{t:'Using the equalizer, make the vocal less sibilant/harsh, however you see fit.'}]},
-{clip:'audio/task3.mp3',fb:'white',cap:180,ins:"Close is good enough, values don't need to be exact. When you're satisfied, press Lock In.",
+{clip:'audio/task3.mp3',fb:'white',cap:180,ins:"</br> <b> Close is good enough, values don't need to be exact. <b> </br> When you're satisfied, press Lock In.",
  v:[{t:'Using the high-pass filter, cut everything below 125 Hz.',tgt:{hp:125}},{t:'Using the high-pass filter, cut everything below 200 Hz.',tgt:{hp:200}}]},
 {clip:'audio/task4.mp3',cap:300,ins:'When you are satisfied with the sound, press Lock In.',
  v:[{t:'Using the equalizer, make the drums less harsh, however you see fit.'},{t:'Using the equalizer, make the drums less boomy, however you see fit.'}]}];
